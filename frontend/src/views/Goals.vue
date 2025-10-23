@@ -2,8 +2,8 @@
   <div class="p-6">
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">Financial Goals</h1>
-        <p class="text-gray-600">Set and track your financial objectives</p>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Financial Goals</h1>
+        <p class="text-gray-600 dark:text-gray-400">Set and track your financial objectives</p>
       </div>
       <button @click="showCreateModal = true" class="btn-primary">
         <PlusIcon class="w-5 h-5 mr-2" />
@@ -24,7 +24,7 @@
               <FlagIcon class="w-6 h-6 text-primary-600" />
             </div>
             <div class="ml-3">
-              <h3 class="font-semibold text-gray-900">{{ goal.goal_name }}</h3>
+              <h3 class="font-semibold text-gray-900 dark:text-white">{{ goal.goal_name }}</h3>
               <p class="text-sm text-gray-500 capitalize">{{ goal.goal_type.replace('_', ' ') }}</p>
             </div>
           </div>
@@ -36,11 +36,11 @@
 
         <div class="space-y-3">
           <div class="flex justify-between text-sm">
-            <span class="text-gray-600">Progress</span>
-            <span class="font-medium">{{ Math.round((goal.current_amount / goal.target_amount) * 100) }}%</span>
+            <span class="text-gray-600 dark:text-gray-400">Progress</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ Math.round((goal.current_amount / goal.target_amount) * 100) }}%</span>
           </div>
           
-          <div class="w-full bg-gray-200 rounded-full h-3">
+          <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3">
             <div
               class="bg-primary-600 h-3 rounded-full transition-all duration-300"
               :style="{ width: `${Math.min((goal.current_amount / goal.target_amount) * 100, 100)}%` }"
@@ -48,29 +48,29 @@
           </div>
 
           <div class="flex justify-between text-sm">
-            <span class="text-gray-600">Current</span>
-            <span class="font-medium">${{ formatCurrency(goal.current_amount) }}</span>
+            <span class="text-gray-600 dark:text-gray-400">Current</span>
+            <span class="font-medium text-gray-900 dark:text-white">${{ formatCurrency(goal.current_amount) }}</span>
           </div>
           
           <div class="flex justify-between text-sm">
-            <span class="text-gray-600">Target</span>
-            <span class="font-medium">${{ formatCurrency(goal.target_amount) }}</span>
+            <span class="text-gray-600 dark:text-gray-400">Target</span>
+            <span class="font-medium text-gray-900 dark:text-white">${{ formatCurrency(goal.target_amount) }}</span>
           </div>
 
           <div class="flex justify-between text-sm">
-            <span class="text-gray-600">Target Date</span>
-            <span class="font-medium">{{ formatDate(goal.target_date) }}</span>
+            <span class="text-gray-600 dark:text-gray-400">Target Date</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ formatDate(goal.target_date) }}</span>
           </div>
 
           <div class="flex justify-between text-sm">
-            <span class="text-gray-600">Remaining</span>
-            <span class="font-medium text-primary-600">
+            <span class="text-gray-600 dark:text-gray-400">Remaining</span>
+            <span class="font-medium text-primary-600 dark:text-primary-400">
               ${{ formatCurrency(goal.target_amount - goal.current_amount) }}
             </span>
           </div>
         </div>
 
-        <div class="mt-4 pt-4 border-t border-gray-200 flex space-x-2">
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex space-x-2">
           <button
             @click="updateProgress(goal)"
             class="btn-primary flex-1 text-sm"
@@ -96,8 +96,8 @@
       <div v-if="financeStore.goals.length === 0" class="col-span-full">
         <div class="text-center py-12">
           <FlagIcon class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No goals yet</h3>
-          <p class="text-gray-500 mb-6">Set your first financial goal to start tracking your progress</p>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No goals yet</h3>
+          <p class="text-gray-500 dark:text-gray-400 mb-6">Set your first financial goal to start tracking your progress</p>
           <button @click="showCreateModal = true" class="btn-primary">
             Create Your First Goal
           </button>
@@ -107,12 +107,12 @@
 
     <!-- Create Goal Modal -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Create New Goal</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Goal</h3>
         
         <form @submit.prevent="createGoal" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Goal Name</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Goal Name</label>
             <input
               v-model="newGoal.goal_name"
               type="text"
@@ -123,7 +123,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Goal Type</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Goal Type</label>
             <select v-model="newGoal.goal_type" required class="input-field">
               <option value="">Select type</option>
               <option value="savings">Savings</option>
@@ -133,7 +133,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Target Amount</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Amount</label>
             <input
               v-model.number="newGoal.target_amount"
               type="number"
@@ -145,7 +145,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Target Date</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Date</label>
             <input
               v-model="newGoal.target_date"
               type="date"
@@ -155,7 +155,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Priority</label>
             <select v-model="newGoal.priority" class="input-field">
               <option value="high">High</option>
               <option value="medium">Medium</option>
@@ -163,7 +163,7 @@
             </select>
           </div>
 
-          <div v-if="createError" class="text-red-600 text-sm">
+          <div v-if="createError" class="text-red-600 dark:text-red-400 text-sm">
             {{ createError }}
           </div>
 
@@ -185,12 +185,12 @@
 
     <!-- Edit Goal Modal -->
     <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Goal</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Edit Goal</h3>
         
         <form @submit.prevent="saveEditGoal" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Goal Name</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Goal Name</label>
             <input
               v-model="editGoalData.goal_name"
               type="text"
@@ -201,7 +201,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Goal Type</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Goal Type</label>
             <select v-model="editGoalData.goal_type" required class="input-field">
               <option value="">Select type</option>
               <option value="savings">Savings</option>
@@ -211,7 +211,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Target Amount</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Amount</label>
             <input
               v-model.number="editGoalData.target_amount"
               type="number"
@@ -223,7 +223,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Current Amount</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Amount</label>
             <input
               v-model.number="editGoalData.current_amount"
               type="number"
@@ -235,7 +235,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Target Date</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Date</label>
             <input
               v-model="editGoalData.target_date"
               type="date"
@@ -245,7 +245,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Priority</label>
             <select v-model="editGoalData.priority" class="input-field">
               <option value="high">High</option>
               <option value="medium">Medium</option>
@@ -253,7 +253,7 @@
             </select>
           </div>
 
-          <div v-if="editError" class="text-red-600 text-sm">
+          <div v-if="editError" class="text-red-600 dark:text-red-400 text-sm">
             {{ editError }}
           </div>
 
@@ -275,18 +275,18 @@
 
     <!-- Update Progress Modal -->
     <div v-if="showUpdateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Update Progress</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Update Progress</h3>
         
         <div class="mb-4">
-          <p class="text-sm text-gray-600">{{ selectedGoal?.goal_name }}</p>
-          <p class="text-lg font-semibold">Current: ${{ formatCurrency(selectedGoal?.current_amount || 0) }}</p>
-          <p class="text-sm text-gray-500">Target: ${{ formatCurrency(selectedGoal?.target_amount || 0) }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ selectedGoal?.goal_name }}</p>
+          <p class="text-lg font-semibold text-gray-900 dark:text-white">Current: ${{ formatCurrency(selectedGoal?.current_amount || 0) }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Target: ${{ formatCurrency(selectedGoal?.target_amount || 0) }}</p>
         </div>
 
         <form @submit.prevent="saveProgress" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">New Amount</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Amount</label>
             <input
               v-model.number="newAmount"
               type="number"

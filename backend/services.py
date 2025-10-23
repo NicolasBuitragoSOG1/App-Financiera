@@ -5,6 +5,7 @@ from models import *
 from auth import get_password_hash
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
+from fastapi import HTTPException
 # import pandas as pd  # Commented out temporarily
 # import openai  # Commented out temporarily
 import os
@@ -71,20 +72,60 @@ class AccountService:
             db.refresh(account)
         return account
 
+    @staticmethod
+    def update_account(db: Session, account_id: int, account_data: AccountCreate, user_id: int):
+        account = db.query(DBAccount).filter(
+            and_(DBAccount.id == account_id, DBAccount.user_id == user_id)
+        ).first()
+        if account:
+            for key, value in account_data.dict().items():
+                setattr(account, key, value)
+            account.last_updated = datetime.utcnow()
+            db.commit()
+            db.refresh(account)
+        return account
+
+    @staticmethod
+    def delete_account(db: Session, account_id: int, user_id: int):
+        account = db.query(DBAccount).filter(
+            and_(DBAccount.id == account_id, DBAccount.user_id == user_id)
+        ).first()
+        if account:
+            account.is_active = False
+            db.commit()
+        return {"message": "Account deleted successfully"}
+
 class TransactionService:
     @staticmethod
     def create_transaction(db: Session, transaction: TransactionCreate, user_id: int):
+        # Validate transaction date is not in the future
+        if transaction.transaction_date > datetime.utcnow():
+            raise HTTPException(status_code=400, detail="No es posible agregar la transacción en una fecha futura")
+        
         db_transaction = DBTransaction(**transaction.dict(), user_id=user_id)
         db.add(db_transaction)
         
         # Update account balance
         account = db.query(DBAccount).filter(DBAccount.id == transaction.account_id).first()
-        if account:
-            if transaction.transaction_type == TransactionType.INCOME:
-                account.current_balance += transaction.amount
-            elif transaction.transaction_type == TransactionType.EXPENSE:
-                account.current_balance -= transaction.amount
-            account.last_updated = datetime.utcnow()
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+        
+        # Verify account belongs to user
+        if account.user_id != user_id:
+            raise HTTPException(status_code=403, detail="You don't have permission to use this account")
+        
+        # Check sufficient balance for expenses
+        if transaction.transaction_type == TransactionType.EXPENSE:
+            if account.current_balance < transaction.amount:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Insufficient balance. Available: ${account.current_balance:.2f}, Required: ${transaction.amount:.2f}"
+                )
+            account.current_balance -= transaction.amount
+        elif transaction.transaction_type == TransactionType.INCOME:
+            account.current_balance += transaction.amount
+        
+        account.last_updated = datetime.utcnow()
         
         db.commit()
         db.refresh(db_transaction)
@@ -253,54 +294,124 @@ class FinancialAnalyticsService:
 class AIAssistantService:
     @staticmethod
     async def get_financial_advice(db: Session, user_id: int, query: str) -> AIResponse:
+        import os
+        from openai import OpenAI
+        
         # Get user's financial overview for context
         overview = FinancialAnalyticsService.get_financial_overview(db, user_id)
         
-        context = f"""
-        User Financial Overview:
-        - Total Balance: ${overview.total_balance:,.2f}
-        - Monthly Income: ${overview.monthly_income:,.2f}
-        - Monthly Expenses: ${overview.monthly_expenses:,.2f}
-        - Savings Rate: {overview.savings_rate:.1f}%
-        - Active Goals: {len(overview.active_goals)}
-        - Accounts: {len(overview.account_summaries)} platforms
-        """
-
-        try:
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a financial advisor AI assistant. Provide helpful, practical financial advice based on the user's financial data. Be concise and actionable."
-                    },
-                    {
-                        "role": "user",
-                        "content": f"Context: {context}\n\nQuestion: {query}"
-                    }
-                ],
-                max_tokens=500
-            )
-
-            advice = response.choices[0].message.content
-            
-            # Generate recommendations based on the financial data
-            recommendations = []
-            if overview.savings_rate < 20:
-                recommendations.append("Consider increasing your savings rate to at least 20%")
-            if overview.monthly_expenses > overview.monthly_income * 0.8:
-                recommendations.append("Review your expenses to identify areas for cost reduction")
+        # Generate recommendations based on the financial data
+        recommendations = []
+        if overview.savings_rate < 20:
+            recommendations.append("Consider increasing your savings rate to at least 20%")
+        if overview.monthly_expenses > overview.monthly_income * 0.8:
+            recommendations.append("Review your expenses to identify areas for cost reduction")
+        if len(overview.active_goals) == 0:
+            recommendations.append("Set specific financial goals to stay motivated")
+        if len(overview.account_summaries) < 2:
+            recommendations.append("Consider diversifying across multiple account types")
+        
+        # Prepare financial context for the AI
+        financial_context = f"""
+User's Financial Overview:
+- Total Balance: ${overview.total_balance:,.2f}
+- Monthly Income: ${overview.monthly_income:,.2f}
+- Monthly Expenses: ${overview.monthly_expenses:,.2f}
+- Savings Rate: {overview.savings_rate:.1f}%
+- Active Financial Goals: {len(overview.active_goals)}
+- Number of Accounts: {len(overview.account_summaries)} across different platforms
+"""
+        
+        if len(overview.active_goals) > 0:
+            financial_context += "\nActive Goals:\n"
+            for goal in overview.active_goals[:3]:  # Show top 3 goals
+                progress = (goal.current_amount / goal.target_amount * 100) if goal.target_amount > 0 else 0
+                financial_context += f"- {goal.goal_name}: ${goal.current_amount:,.2f} / ${goal.target_amount:,.2f} ({progress:.1f}% complete)\n"
+        
+        # Check if OpenAI API key is configured
+        api_key = os.getenv('OPENAI_API_KEY')
+        
+        if api_key and api_key != 'your-openai-api-key-here':
+            # Use OpenAI API
+            try:
+                client = OpenAI(api_key=api_key)
+                
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are an expert financial advisor AI assistant. Provide helpful, practical, and personalized financial advice based on the user's financial data. Be concise (2-3 paragraphs), encouraging, and actionable. Use emojis sparingly for emphasis."
+                        },
+                        {
+                            "role": "user",
+                            "content": f"{financial_context}\n\nUser Question: {query}\n\nPlease provide specific advice based on my financial situation."
+                        }
+                    ],
+                    max_tokens=400,
+                    temperature=0.7
+                )
+                
+                ai_response = response.choices[0].message.content
+                
+                return AIResponse(
+                    response=ai_response,
+                    recommendations=recommendations[:3],
+                    confidence=0.95
+                )
+                
+            except Exception as e:
+                print(f"OpenAI API Error: {e}")
+                # Fallback to rule-based system
+        
+        # Fallback: Rule-based responses (when no API key or API fails)
+        query_lower = query.lower()
+        
+        if 'sav' in query_lower or 'save' in query_lower:
+            response = f"Based on your current financial situation, you have a savings rate of {overview.savings_rate:.1f}%. Your monthly income is ${overview.monthly_income:,.2f} and expenses are ${overview.monthly_expenses:,.2f}. "
+            if overview.savings_rate < 10:
+                response += "I recommend focusing on reducing expenses and increasing your savings rate to at least 10-20%. Start by tracking all expenses and identifying areas where you can cut back."
+            elif overview.savings_rate < 20:
+                response += "You're making progress! Try to increase your savings rate to 20% for a healthier financial cushion. Consider automating your savings."
+            else:
+                response += "Excellent savings rate! Consider investing some of your savings for long-term growth."
+                
+        elif 'budget' in query_lower or 'expense' in query_lower or 'spend' in query_lower:
+            response = f"Your current monthly expenses are ${overview.monthly_expenses:,.2f}, which is {(overview.monthly_expenses/overview.monthly_income*100):.1f}% of your income. "
+            if overview.monthly_expenses > overview.monthly_income:
+                response += "⚠️ Your expenses exceed your income. This is unsustainable. Review all expenses immediately and cut non-essential spending."
+            elif overview.monthly_expenses > overview.monthly_income * 0.8:
+                response += "You're spending a high percentage of your income. Try the 50/30/20 rule: 50% needs, 30% wants, 20% savings."
+            else:
+                response += "Your expense ratio looks healthy. Keep tracking your spending and look for optimization opportunities."
+                
+        elif 'goal' in query_lower:
+            response = f"You currently have {len(overview.active_goals)} active financial goals. "
             if len(overview.active_goals) == 0:
-                recommendations.append("Set specific financial goals to stay motivated")
-
-            return AIResponse(
-                response=advice,
-                recommendations=recommendations,
-                confidence=0.85
-            )
-        except Exception as e:
-            return AIResponse(
-                response="I'm currently unable to provide personalized advice. Please try again later.",
-                recommendations=["Review your monthly budget", "Set up emergency fund", "Track your expenses"],
-                confidence=0.5
-            )
+                response += "Setting specific goals is crucial for financial success. Consider creating goals for: emergency fund (3-6 months expenses), retirement savings, major purchases, or debt reduction."
+            else:
+                response += "Great job setting goals! Review them regularly and adjust contributions as your income grows. Breaking large goals into smaller milestones helps maintain motivation."
+                
+        elif 'invest' in query_lower:
+            if overview.savings_rate < 10:
+                response = "Before investing, focus on building an emergency fund covering 3-6 months of expenses. Once that's established, consider low-cost index funds for long-term growth."
+            else:
+                response = f"With a {overview.savings_rate:.1f}% savings rate, you may be ready to invest. Consider: 1) Max out retirement accounts (401k/IRA), 2) Low-cost index funds, 3) Diversify across stocks and bonds based on your risk tolerance."
+                
+        elif 'debt' in query_lower:
+            response = "Debt management strategies: 1) Pay high-interest debt first (credit cards), 2) Consider debt avalanche or snowball method, 3) Avoid new debt while paying existing, 4) Look into debt consolidation if you have multiple loans."
+            
+        else:
+            response = f"Here's an overview of your finances: Total Balance: ${overview.total_balance:,.2f}, Monthly Income: ${overview.monthly_income:,.2f}, Expenses: ${overview.monthly_expenses:,.2f}, Savings Rate: {overview.savings_rate:.1f}%. "
+            if overview.savings_rate >= 20 and overview.monthly_expenses < overview.monthly_income:
+                response += "Your finances look healthy! Focus on maintaining good habits and consider increasing investments for long-term growth."
+            elif overview.savings_rate >= 10:
+                response += "You're on the right track. Work on increasing your savings rate and setting specific financial goals."
+            else:
+                response += "There's room for improvement. Focus on reducing expenses, increasing income if possible, and building better savings habits."
+        
+        return AIResponse(
+            response=response,
+            recommendations=recommendations[:3],
+            confidence=0.85
+        )

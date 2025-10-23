@@ -1,15 +1,15 @@
 <template>
   <div class="p-6">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Financial Analytics</h1>
-      <p class="text-gray-600">Analyze your financial patterns and trends</p>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Financial Analytics</h1>
+      <p class="text-gray-600 dark:text-gray-400">Analyze your financial patterns and trends</p>
     </div>
 
     <!-- Time Period Selector -->
     <div class="card mb-6">
       <div class="flex items-center space-x-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Year</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
           <select v-model="selectedYear" @change="loadMetrics" class="input-field">
             <option v-for="year in availableYears" :key="year" :value="year">
               {{ year }}
@@ -17,7 +17,7 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Month</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Month</label>
           <select v-model="selectedMonth" @change="loadMetrics" class="input-field">
             <option v-for="(month, index) in months" :key="index" :value="index + 1">
               {{ month }}
@@ -48,8 +48,8 @@
               <ArrowUpIcon class="w-8 h-8 text-green-600" />
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Monthly Income</p>
-              <p class="text-3xl font-bold text-gray-900">${{ formatCurrency(metrics.monthly_income || 0) }}</p>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Income</p>
+              <p class="text-3xl font-bold text-gray-900 dark:text-white">${{ formatCurrency(metrics.monthly_income || 0) }}</p>
               <p class="text-sm text-green-600">+{{ incomeGrowth }}% from last month</p>
             </div>
           </div>
@@ -61,8 +61,8 @@
               <ArrowDownIcon class="w-8 h-8 text-red-600" />
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Monthly Expenses</p>
-              <p class="text-3xl font-bold text-gray-900">${{ formatCurrency(metrics.monthly_expenses || 0) }}</p>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Expenses</p>
+              <p class="text-3xl font-bold text-gray-900 dark:text-white">${{ formatCurrency(metrics.monthly_expenses || 0) }}</p>
               <p class="text-sm text-red-600">+{{ expenseGrowth }}% from last month</p>
             </div>
           </div>
@@ -74,8 +74,8 @@
               <ChartBarIcon class="w-8 h-8 text-blue-600" />
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Savings Rate</p>
-              <p class="text-3xl font-bold text-gray-900">{{ formatPercentage(metrics.savings_rate || 0) }}%</p>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Savings Rate</p>
+              <p class="text-3xl font-bold text-gray-900 dark:text-white">{{ formatPercentage(metrics.savings_rate || 0) }}%</p>
               <p class="text-sm" :class="savingsRateChange >= 0 ? 'text-green-600' : 'text-red-600'">
                 {{ savingsRateChange >= 0 ? '+' : '' }}{{ savingsRateChange }}% from last month
               </p>
@@ -88,7 +88,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Income vs Expenses Chart -->
         <div class="card">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Income vs Expenses</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Income vs Expenses</h3>
           <div class="h-64">
             <canvas ref="incomeExpenseChart"></canvas>
           </div>
@@ -96,7 +96,7 @@
 
         <!-- Expense Categories Chart -->
         <div class="card">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Expense Categories</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Expense Categories</h3>
           <div class="h-64">
             <canvas ref="expenseCategoriesChart"></canvas>
           </div>
@@ -107,22 +107,22 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Monthly Trends -->
         <div class="card">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Trends</h3>
           <div class="space-y-4">
-            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span class="text-sm font-medium text-gray-700">Net Income</span>
+            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Net Income</span>
               <span class="text-lg font-bold" :class="netIncome >= 0 ? 'text-green-600' : 'text-red-600'">
                 ${{ formatCurrency(Math.abs(netIncome)) }}
               </span>
             </div>
-            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span class="text-sm font-medium text-gray-700">Daily Average Spending</span>
-              <span class="text-lg font-bold text-gray-900">
+            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Daily Average Spending</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white">
                 ${{ formatCurrency(dailyAverageSpending) }}
               </span>
             </div>
-            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span class="text-sm font-medium text-gray-700">Largest Expense</span>
+            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Largest Expense</span>
               <span class="text-lg font-bold text-red-600">
                 ${{ formatCurrency(largestExpense) }}
               </span>
@@ -132,12 +132,12 @@
 
         <!-- Financial Health Score -->
         <div class="card">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Health Score</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Financial Health Score</h3>
           <div class="text-center">
             <div class="relative w-32 h-32 mx-auto mb-4">
               <svg class="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
                 <path
-                  class="text-gray-300"
+                  class="text-gray-300 dark:text-gray-600"
                   stroke="currentColor"
                   stroke-width="3"
                   fill="none"
@@ -154,15 +154,15 @@
                 />
               </svg>
               <div class="absolute inset-0 flex items-center justify-center">
-                <span class="text-2xl font-bold text-gray-900">{{ healthScore }}/100</span>
+                <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ healthScore }}/100</span>
               </div>
             </div>
-            <p class="text-sm text-gray-600 mb-4">{{ getHealthScoreDescription(healthScore) }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ getHealthScoreDescription(healthScore) }}</p>
             <div class="space-y-2 text-left">
               <div v-for="recommendation in healthRecommendations" :key="recommendation" 
                    class="flex items-start">
                 <CheckCircleIcon class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                <span class="text-sm text-gray-700">{{ recommendation }}</span>
+                <span class="text-sm text-gray-700 dark:text-gray-300">{{ recommendation }}</span>
               </div>
             </div>
           </div>
@@ -171,45 +171,45 @@
 
       <!-- Account Performance -->
       <div class="card">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Account Performance</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Performance</h3>
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Account
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Platform
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Current Balance
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Monthly Change
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Performance
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="account in financeStore.accounts" :key="account.id" class="hover:bg-gray-50">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="account in financeStore.accounts" :key="account.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ account.account_name }}</div>
-                  <div class="text-sm text-gray-500 capitalize">{{ account.account_type }}</div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">{{ account.account_name }}</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400 capitalize">{{ account.account_type }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {{ account.platform.name }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                   ${{ formatCurrency(account.current_balance) }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   <span class="text-green-600">+${{ formatCurrency(Math.random() * 500) }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                     Growing
                   </span>
                 </td>
@@ -244,6 +244,9 @@ const metrics = ref({})
 
 const incomeExpenseChart = ref(null)
 const expenseCategoriesChart = ref(null)
+
+let incomeExpenseChartInstance = null
+let expenseCategoriesChartInstance = null
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -327,102 +330,257 @@ const expenseGrowth = ref(2.1)
 const savingsRateChange = ref(1.3)
 
 onMounted(async () => {
+  console.log('Analytics component mounted')
   await financeStore.initializeData()
+  console.log('Store initialized, transactions:', financeStore.transactions.length)
   await loadMetrics()
 })
 
 const loadMetrics = async () => {
+  console.log('*** LOAD METRICS CALLED ***')
+  console.log('Year:', selectedYear.value, 'Month:', selectedMonth.value)
+  
   isLoading.value = true
+  
   try {
-    const result = await financeStore.fetchMonthlyMetrics(selectedYear.value, selectedMonth.value)
-    if (result) {
-      metrics.value = result
-    }
+    // Calculate metrics from transactions
+    calculateMetricsFromTransactions()
     
+    // IMPORTANT: Set loading to false BEFORE creating charts
+    // so the v-else content (with canvas elements) becomes visible
+    isLoading.value = false
+    console.log('Loading set to false, waiting for DOM...')
+    
+    // Wait for DOM to update and canvas elements to appear
     await nextTick()
-    createCharts()
+    
+    // Additional delay to ensure canvas is fully rendered
+    setTimeout(() => {
+      console.log('DOM ready, creating charts now...')
+      createCharts()
+      console.log('*** CHARTS CREATION COMPLETE ***')
+    }, 150)
+    
   } catch (error) {
-    console.error('Error loading metrics:', error)
-  } finally {
+    console.error('Error in loadMetrics:', error)
     isLoading.value = false
   }
 }
 
+const calculateMetricsFromTransactions = () => {
+  const startDate = new Date(selectedYear.value, selectedMonth.value - 1, 1)
+  const endDate = new Date(selectedYear.value, selectedMonth.value, 0, 23, 59, 59)
+  
+  const monthTransactions = financeStore.transactions.filter(t => {
+    const tDate = new Date(t.transaction_date)
+    return tDate >= startDate && tDate <= endDate
+  })
+  
+  const income = monthTransactions
+    .filter(t => t.transaction_type === 'income')
+    .reduce((sum, t) => sum + t.amount, 0)
+  
+  const expenses = monthTransactions
+    .filter(t => t.transaction_type === 'expense')
+    .reduce((sum, t) => sum + t.amount, 0)
+  
+  metrics.value = {
+    monthly_income: income,
+    monthly_expenses: expenses,
+    savings_rate: income > 0 ? ((income - expenses) / income * 100) : 0
+  }
+  
+  console.log('Calculated metrics from transactions:', metrics.value)
+}
+
 const createCharts = () => {
-  // Income vs Expenses Chart
-  if (incomeExpenseChart.value) {
-    const ctx = incomeExpenseChart.value.getContext('2d')
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Income', 'Expenses', 'Net'],
-        datasets: [{
-          data: [
-            metrics.value.monthly_income || 0,
-            metrics.value.monthly_expenses || 0,
-            netIncome.value
-          ],
-          backgroundColor: ['#10b981', '#ef4444', netIncome.value >= 0 ? '#10b981' : '#ef4444'],
-          borderRadius: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
+  console.log('=== START CREATE CHARTS ===')
+  console.log('Canvas refs - Income:', incomeExpenseChart.value, 'Categories:', expenseCategoriesChart.value)
+  console.log('Metrics:', metrics.value)
+  console.log('Transactions:', financeStore.transactions.length)
+  
+  try {
+    // Destroy existing charts
+    if (incomeExpenseChartInstance) {
+      console.log('Destroying old income chart')
+      incomeExpenseChartInstance.destroy()
+      incomeExpenseChartInstance = null
+    }
+    if (expenseCategoriesChartInstance) {
+      console.log('Destroying old categories chart')
+      expenseCategoriesChartInstance.destroy()
+      expenseCategoriesChartInstance = null
+    }
+
+    // Income vs Expenses Chart
+    console.log('Creating Income vs Expenses chart...')
+    if (incomeExpenseChart.value) {
+      const ctx = incomeExpenseChart.value.getContext('2d')
+      const income = metrics.value.monthly_income || 0
+      const expenses = metrics.value.monthly_expenses || 0
+      const net = income - expenses
+      
+      console.log('Chart data - Income:', income, 'Expenses:', expenses, 'Net:', net)
+      
+      const isDark = document.documentElement.classList.contains('dark')
+      const textColor = isDark ? '#e5e7eb' : '#374151'
+      const gridColor = isDark ? '#4b5563' : '#e5e7eb'
+      
+      incomeExpenseChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Income', 'Expenses', 'Net'],
+          datasets: [{
+            label: 'Amount',
+            data: [income, expenses, Math.abs(net)],
+            backgroundColor: [
+              'rgba(16, 185, 129, 0.8)', 
+              'rgba(239, 68, 68, 0.8)', 
+              net >= 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)'
+            ],
+            borderColor: [
+              'rgb(16, 185, 129)', 
+              'rgb(239, 68, 68)', 
+              net >= 0 ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)'
+            ],
+            borderWidth: 2,
+            borderRadius: 8
+          }]
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return '$' + value.toLocaleString()
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: `Monthly Overview (${months[selectedMonth.value - 1]} ${selectedYear.value})`,
+              color: textColor,
+              font: {
+                size: 14,
+                weight: 'normal'
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: textColor
+              },
+              grid: {
+                color: gridColor
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: textColor,
+                callback: function(value) {
+                  return '$' + value.toLocaleString()
+                }
+              },
+              grid: {
+                color: gridColor
               }
             }
           }
         }
-      }
-    })
-  }
+      })
+      console.log('✓ Income vs Expenses chart created successfully!')
+    } else {
+      console.error('✗ Income expense chart canvas not found!')
+    }
 
-  // Expense Categories Chart
-  if (expenseCategoriesChart.value) {
-    const ctx = expenseCategoriesChart.value.getContext('2d')
-    
-    // Group expenses by category
-    const expensesByCategory = {}
-    financeStore.transactions
-      .filter(t => t.transaction_type === 'expense')
-      .forEach(t => {
-        expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + t.amount
+    // Expense Categories Chart
+    if (expenseCategoriesChart.value) {
+      const ctx = expenseCategoriesChart.value.getContext('2d')
+      
+      // Group ALL expenses by category (not filtered by month for better visualization)
+      const expensesByCategory = {}
+      const expenseTransactions = financeStore.transactions.filter(t => t.transaction_type === 'expense')
+      
+      if (expenseTransactions.length === 0) {
+        console.warn('No expense transactions found')
+        return
+      }
+      
+      expenseTransactions.forEach(t => {
+        if (t.category) {
+          expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + parseFloat(t.amount)
+        }
       })
 
-    const categories = Object.keys(expensesByCategory)
-    const amounts = Object.values(expensesByCategory)
+      const categories = Object.keys(expensesByCategory)
+      const amounts = Object.values(expensesByCategory)
 
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: categories,
-        datasets: [{
-          data: amounts,
-          backgroundColor: [
-            '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
-            '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6b7280'
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom'
+      if (categories.length > 0) {
+        const isDark = document.documentElement.classList.contains('dark')
+        const textColor = isDark ? '#e5e7eb' : '#374151'
+        const borderColor = isDark ? '#1f2937' : '#ffffff'
+        
+        expenseCategoriesChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: categories,
+            datasets: [{
+              data: amounts,
+              backgroundColor: [
+                '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+                '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6b7280',
+                '#0ea5e9', '#f43f5e', '#22c55e', '#eab308', '#a855f7'
+              ],
+              borderWidth: 2,
+              borderColor: borderColor
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: {
+                  color: textColor,
+                  padding: 10,
+                  font: {
+                    size: 11
+                  }
+                }
+              },
+              title: {
+                display: true,
+                text: 'Expense Distribution by Category',
+                color: textColor,
+                font: {
+                  size: 14,
+                  weight: 'normal'
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || ''
+                    const value = context.parsed || 0
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0)
+                    const percentage = ((value / total) * 100).toFixed(1)
+                    return label + ': $' + value.toFixed(2) + ' (' + percentage + '%)'
+                  }
+                }
+              }
+            }
           }
-        }
+        })
+        console.log('✓ Expense Categories chart created successfully!')
+      } else {
+        console.warn('⚠ No expense categories found')
       }
-    })
+    } else {
+      console.error('✗ Expense categories chart canvas not found!')
+    }
+    
+    console.log('=== END CREATE CHARTS ===')
+  } catch (error) {
+    console.error('✗✗✗ ERROR CREATING CHARTS:', error)
   }
 }
 

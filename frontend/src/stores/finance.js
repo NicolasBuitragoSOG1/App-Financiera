@@ -74,6 +74,38 @@ export const useFinanceStore = defineStore('finance', () => {
     }
   }
 
+  const updateAccount = async (accountId, accountData) => {
+    try {
+      const response = await axios.put(`/api/accounts/${accountId}`, accountData)
+      const accountIndex = accounts.value.findIndex(a => a.id === accountId)
+      if (accountIndex !== -1) {
+        accounts.value[accountIndex] = response.data
+      }
+      return { success: true, data: response.data }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.detail || 'Failed to update account' 
+      }
+    }
+  }
+
+  const deleteAccount = async (accountId) => {
+    try {
+      await axios.delete(`/api/accounts/${accountId}`)
+      const accountIndex = accounts.value.findIndex(a => a.id === accountId)
+      if (accountIndex !== -1) {
+        accounts.value.splice(accountIndex, 1)
+      }
+      return { success: true }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.detail || 'Failed to delete account' 
+      }
+    }
+  }
+
   // Transaction operations
   const fetchTransactions = async (limit = 50) => {
     try {
@@ -101,6 +133,14 @@ export const useFinanceStore = defineStore('finance', () => {
       
       return { success: true, data: response.data }
     } catch (error) {
+      // Handle Pydantic validation errors (422)
+      if (error.response?.status === 422 && Array.isArray(error.response?.data?.detail)) {
+        const validationError = error.response.data.detail[0]
+        const errorMsg = validationError.msg.replace('Value error, ', '')
+        return { success: false, error: errorMsg }
+      }
+      
+      // Handle other errors (400, 403, 404, etc.)
       return { 
         success: false, 
         error: error.response?.data?.detail || 'Failed to create transaction' 
@@ -234,7 +274,9 @@ export const useFinanceStore = defineStore('finance', () => {
     accountsByPlatform,
     fetchAccounts,
     createAccount,
+    updateAccount,
     updateAccountBalance,
+    deleteAccount,
     fetchTransactions,
     createTransaction,
     fetchGoals,
