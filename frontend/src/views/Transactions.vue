@@ -2,8 +2,8 @@
   <div class="p-6">
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">Transactions</h1>
-        <p class="text-gray-600">Track your income and expenses</p>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Transactions</h1>
+        <p class="text-gray-600 dark:text-gray-400">Track your income and expenses</p>
       </div>
       <button @click="showCreateModal = true" class="btn-primary">
         <PlusIcon class="w-5 h-5 mr-2" />
@@ -15,7 +15,7 @@
     <div class="card mb-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
           <select v-model="filters.type" class="input-field">
             <option value="">All Types</option>
             <option value="income">Income</option>
@@ -24,7 +24,7 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
           <select v-model="filters.category" class="input-field">
             <option value="">All Categories</option>
             <option v-for="category in categories" :key="category" :value="category">
@@ -33,7 +33,7 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account</label>
           <select v-model="filters.account" class="input-field">
             <option value="">All Accounts</option>
             <option v-for="account in financeStore.accounts" :key="account.id" :value="account.id">
@@ -52,43 +52,43 @@
     <!-- Transactions Table -->
     <div class="card">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Date
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Description
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Category
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Account
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Type
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Amount
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="transaction in filteredTransactions" :key="transaction.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="transaction in filteredTransactions" :key="transaction.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                 {{ formatDate(transaction.transaction_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ transaction.description }}</div>
+                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ transaction.description }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                   {{ transaction.category }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                 {{ transaction.account.account_name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -108,8 +108,8 @@
         <!-- Empty State -->
         <div v-if="filteredTransactions.length === 0" class="text-center py-12">
           <ArrowsRightLeftIcon class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
-          <p class="text-gray-500 mb-6">Start tracking your finances by adding your first transaction</p>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No transactions found</h3>
+          <p class="text-gray-500 dark:text-gray-400 mb-6">Start tracking your finances by adding your first transaction</p>
           <button @click="showCreateModal = true" class="btn-primary">
             Add Transaction
           </button>
@@ -119,12 +119,12 @@
 
     <!-- Create Transaction Modal -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Transaction</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Add New Transaction</h3>
         
         <form @submit.prevent="createTransaction" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account</label>
             <select v-model="newTransaction.account_id" required class="input-field">
               <option value="">Select an account</option>
               <option
@@ -138,7 +138,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
             <select v-model="newTransaction.transaction_type" required class="input-field">
               <option value="">Select type</option>
               <option value="income">Income</option>
@@ -148,7 +148,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
             <select v-model="newTransaction.category" required class="input-field">
               <option value="">Select category</option>
               <option v-for="category in getCategories(newTransaction.transaction_type)" :key="category" :value="category">
@@ -157,8 +157,19 @@
             </select>
           </div>
 
+          <!-- Available Balance Info -->
+          <div v-if="selectedAccountBalance !== null && newTransaction.transaction_type === 'expense'" class="p-3 rounded-lg" :class="availableBalanceClass">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium">Available Balance:</span>
+              <span class="text-lg font-bold">${{ formatCurrency(selectedAccountBalance) }}</span>
+            </div>
+            <div v-if="newTransaction.amount > selectedAccountBalance" class="mt-2 text-sm">
+              ⚠️ Insufficient balance! You need ${{ formatCurrency(newTransaction.amount - selectedAccountBalance) }} more.
+            </div>
+          </div>
+
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
             <input
               v-model.number="newTransaction.amount"
               type="number"
@@ -170,7 +181,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <input
               v-model="newTransaction.description"
               type="text"
@@ -181,7 +192,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
             <input
               v-model="newTransaction.transaction_date"
               type="datetime-local"
@@ -190,7 +201,7 @@
             />
           </div>
 
-          <div v-if="createError" class="text-red-600 text-sm">
+          <div v-if="createError" class="text-red-600 dark:text-red-400 text-sm">
             {{ createError }}
           </div>
 
@@ -277,6 +288,23 @@ const filteredTransactions = computed(() => {
   }
 
   return filtered
+})
+
+// Get selected account balance
+const selectedAccountBalance = computed(() => {
+  if (!newTransaction.value.account_id) return null
+  const account = financeStore.accounts.find(a => a.id === newTransaction.value.account_id)
+  return account ? account.current_balance : null
+})
+
+// Check if amount exceeds balance
+const availableBalanceClass = computed(() => {
+  if (newTransaction.value.transaction_type !== 'expense') return 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+  if (!selectedAccountBalance.value) return 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+  if (newTransaction.value.amount > selectedAccountBalance.value) {
+    return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
+  }
+  return 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
 })
 
 onMounted(() => {

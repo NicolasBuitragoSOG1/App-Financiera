@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -108,6 +108,12 @@ class TransactionBase(BaseModel):
 
 class TransactionCreate(TransactionBase):
     account_id: int
+    
+    @validator('transaction_date')
+    def transaction_date_not_future(cls, v):
+        if v > datetime.utcnow():
+            raise ValueError('No es posible agregar la transacción en una fecha futura')
+        return v
 
 class Transaction(TransactionBase):
     id: int

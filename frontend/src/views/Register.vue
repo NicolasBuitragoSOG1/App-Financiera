@@ -1,13 +1,23 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center gradient-bg">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
+  <div class="min-h-screen flex items-center justify-center gradient-bg relative">
+    <!-- Theme Toggle Button -->
+    <button
+      @click="themeStore.toggleTheme()"
+      class="absolute top-4 right-4 p-2 rounded-lg bg-white/20 hover:bg-white/30 dark:bg-gray-800/50 dark:hover:bg-gray-700/50 backdrop-blur-sm transition-all"
+      :title="themeStore.isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+    >
+      <SunIcon v-if="themeStore.isDark" class="w-6 h-6 text-white" />
+      <MoonIcon v-else class="w-6 h-6 text-white" />
+    </button>
+
+    <div class="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl transition-colors duration-200">
       <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
           Create your account
         </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
+        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Or
-          <router-link to="/login" class="font-medium text-primary-600 hover:text-primary-500">
+          <router-link to="/login" class="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500">
             sign in to existing account
           </router-link>
         </p>
@@ -15,7 +25,7 @@
       <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
         <div class="space-y-4">
           <div>
-            <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <label for="full_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
             <input
               id="full_name"
               v-model="form.full_name"
@@ -27,7 +37,7 @@
             />
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email address</label>
             <input
               id="email"
               v-model="form.email"
@@ -39,7 +49,7 @@
             />
           </div>
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
             <input
               id="password"
               v-model="form.password"
@@ -90,14 +100,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useThemeStore } from '../stores/theme'
 import { useToast } from 'vue-toastification'
+import { MoonIcon, SunIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const toast = useToast()
+
+onMounted(() => {
+  themeStore.initTheme()
+})
 
 const form = ref({
   full_name: '',

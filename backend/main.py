@@ -101,6 +101,23 @@ def update_account_balance(
         db, account_id, balance_update["new_balance"], current_user.id
     )
 
+@app.put("/api/accounts/{account_id}", response_model=Account)
+def update_account(
+    account_id: int,
+    account: AccountCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    return AccountService.update_account(db, account_id, account, current_user.id)
+
+@app.delete("/api/accounts/{account_id}")
+def delete_account(
+    account_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    return AccountService.delete_account(db, account_id, current_user.id)
+
 # Transaction endpoints
 @app.post("/api/transactions", response_model=Transaction)
 def create_transaction(
