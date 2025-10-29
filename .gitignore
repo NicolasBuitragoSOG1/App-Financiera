@@ -77,3 +77,12 @@ logs
 
 # API Keys
 openai_key.txt
+
+# Testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.vitest/
+coverage/
+*.coverage
