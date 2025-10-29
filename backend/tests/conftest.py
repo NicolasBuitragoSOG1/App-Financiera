@@ -6,7 +6,7 @@ from sqlalchemy.pool import StaticPool
 
 from main import app
 from database import Base, get_db
-from models import User, Account, Transaction, FinancialGoal, BankingPlatform
+from database import User, Account, Transaction, FinancialGoal, BankingPlatform
 from auth import get_password_hash
 
 # Base de datos en memoria para pruebas
@@ -53,11 +53,13 @@ def client(db_session):
 @pytest.fixture
 def test_user(db_session):
     """Usuario de prueba"""
+    from datetime import datetime
     user = User(
         email="test@example.com",
         hashed_password=get_password_hash("password123"),
         full_name="Test User",
-        is_active=True
+        is_active=True,
+        created_at=datetime.utcnow()
     )
     db_session.add(user)
     db_session.commit()
@@ -82,13 +84,17 @@ def test_platform(db_session):
 @pytest.fixture
 def test_account(db_session, test_user, test_platform):
     """Cuenta bancaria de prueba"""
+    from datetime import datetime
     account = Account(
         user_id=test_user.id,
         platform_id=test_platform.id,
         account_name="Test Account",
         account_type="checking",
+        account_number="TEST123456",
         current_balance=1000.00,
-        currency="USD"
+        currency="USD",
+        created_at=datetime.utcnow(),
+        last_updated=datetime.utcnow()
     )
     db_session.add(account)
     db_session.commit()
@@ -100,7 +106,7 @@ def test_account(db_session, test_user, test_platform):
 def auth_headers(client, test_user):
     """Headers de autenticación para pruebas"""
     response = client.post(
-        "/api/auth/login",
+        "/api/login",
         data={
             "username": test_user.email,
             "password": "password123"
